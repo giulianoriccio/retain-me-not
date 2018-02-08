@@ -1,0 +1,89 @@
+.rmn_loaded .item-list__header__retainer--name {
+    width: 348px !important;
+}
+
+.rmn_loaded .item-list__header__retainer--storable,
+.rmn_loaded .item-list__header__retainer--salvageable,
+.rmn_loaded .item-list__header__retainer--stackable {
+    width: 80px;
+}
+
+.rmn_loaded .item-list__storable,
+.rmn_loaded .item-list__salvageable {
+    text-align: center;
+    display: table-cell;
+    line-height: 0;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
+.rmn_loaded .item-list__number,
+.rmn_loaded .item-list__salvageable {
+    width: 80px;
+}
+
+.rmn_loaded .item-list__storable {
+    width: 88px;
+}
+
+.rmn_loaded .item-list__storable::after,
+.rmn_loaded .item-list__salvageable::after {
+    content: "";
+    display: inline-block;
+    border-radius: 50%;
+    height: 16px;
+    width: 16px;
+}
+
+.rmn_loaded .item-list__storable.storable_sign--0::after,
+.rmn_loaded .item-list__salvageable.salvageable_sign--0::after {
+    background: #993d3d;
+}
+
+.rmn_loaded .item-list__storable.storable_sign--1::after,
+.rmn_loaded .item-list__salvageable.salvageable_sign--1::after {
+    background: #6a993d;
+}
+
+.rmn_loaded .item-list__header__rmn-stackable--name {
+    width: 194px;
+}
+
+.rmn_loaded .item-list__header__rmn-stackable--retainers {
+    width: 194px;
+}
+
+.rmn_loaded .item-list__header__rmn-stackable--stacks-before,
+.rmn_loaded .item-list__header__rmn-stackable--stacks-after {
+    width: 100px;
+}
+
+.rmn_loaded .item-list__header__rmn-storable--name,
+.rmn_loaded .item-list__header__rmn-salvageable--name,
+.rmn_loaded .item-list__header__rmn-duplicate--name {
+    width: 298px;
+}
+
+.rmn_loaded .item-list__header__rmn-storable--retainers,
+.rmn_loaded .item-list__header__rmn-salvageable--retainers,
+.rmn_loaded .item-list__header__rmn-duplicate--retainers {
+    width: 298px;
+}
+
+.rmn_loaded .item-list__rmn-storable-retainers,
+.rmn_loaded .item-list__rmn-salvageable-retainers,
+.rmn_loaded .item-list__rmn-duplicate-retainers {
+    width: 290px;
+}
+
+.rmn_loaded .item-list__rmn-stackable-retainers {
+    width: 188px;
+}
+
+.rmn_loaded .item-list__rmn-stackable-total-stacks {
+    width: 104px;
+}
+
+.rmn_loaded .item-list__rmn-stackable-min-stacks {
+    width: 102px;
+}
