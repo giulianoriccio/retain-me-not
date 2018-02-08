@@ -184,7 +184,7 @@ chrome.runtime.sendMessage({}, response => {
 
         promises.push($.get(url, response => {
             (new DOMParser()).parseFromString(response, "text/html").querySelectorAll(".item-list__list").forEach(item => {
-                var lodestone_id = item.querySelector(".db-tooltip__bt_item_detail a").href.match(/db\/item\/([a-z0-9]+)\//)[1],
+                var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
                     hq           = item.querySelector(".ic_item_quality") !== null,
                     quantity     = parseInt(item.querySelector(".item-list__number").textContent);
 
@@ -246,7 +246,7 @@ chrome.runtime.sendMessage({}, response => {
                 Object.keys(retainers_items).forEach(other_retainer => {
                     var other_items = retainers_items[other_retainer];
 
-                    if (!(lodestone_id in other_items) || retainer == other_retainer) {
+                    if (!(lodestone_id in other_items)) {
                         return;
                     }
 
