@@ -246,7 +246,7 @@ chrome.runtime.sendMessage({}, response => {
                 Object.keys(retainers_items).forEach(other_retainer => {
                     var other_items = retainers_items[other_retainer];
 
-                    if (!(lodestone_id in other_items) || retainer == other_retainer) {
+                    if (!(lodestone_id in other_items)) {
                         return;
                     }
 
