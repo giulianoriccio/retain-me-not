@@ -67,7 +67,7 @@ chrome.runtime.sendMessage({}, response => {
                 "Stacks (before)"                                                       : "Piles (avant)",
                 "Stacks (after)"                                                        : "Piles (après)"
             },
-            "jp": {
+            "ja": {
                 "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
                 "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
@@ -258,6 +258,10 @@ chrome.runtime.sendMessage({}, response => {
                         report.stackables[lodestone_id][retainer]       = stacks;
                         report.stackables[lodestone_id][other_retainer] = other_items[lodestone_id];
                     } else {
+                        if (retainer == other_retainer) {
+                            return;
+                        }
+
                         if (!(lodestone_id in report.duplicates)) {
                             report.duplicates[lodestone_id] = {};
                         }
