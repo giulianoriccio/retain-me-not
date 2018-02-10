@@ -55,13 +55,13 @@ chrome.runtime.sendMessage({}, response => {
                 "Stacks (after)"                                                        : "Stapelzahl (danach)"
             },
             "fr": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO                                                            : translate
+                "Storables (items you can store in your Armoire)"                       : "Stockable (objets que vous pouvez ranger dans votre Bahut)",
+                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Consignable (objets que vous pouvez racheter au Consigneur)",
+                "Stackables (items you can stack together to reduce the occupied slots)": "Empilable (objets que vous pouvez empiler ensemble pour réduire leur place)",
+                "Duplicates"                                                            : "Doublons",
                 "Storable"                                                              : "Stockable",
-                "Salvageable"                                                           : "Salvageable", // TO-DO                                                           : translate
-                "Stackable"                                                             : "Stackable", // TO-DO                                                             : translate
+                "Salvageable"                                                           : "Consignable",
+                "Stackable"                                                             : "Empilable",
                 "Retainers"                                                             : "Servants",
                 "Items"                                                                 : "Objets",
                 "Stacks (before)"                                                       : "Piles (avant)",
