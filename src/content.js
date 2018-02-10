@@ -258,6 +258,10 @@ chrome.runtime.sendMessage({}, response => {
                         report.stackables[lodestone_id][retainer]       = stacks;
                         report.stackables[lodestone_id][other_retainer] = other_items[lodestone_id];
                     } else {
+                        if (retainer == other_retainer) {
+                            return;
+                        }
+
                         if (!(lodestone_id in report.duplicates)) {
                             report.duplicates[lodestone_id] = {};
                         }
