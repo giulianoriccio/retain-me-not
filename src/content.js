@@ -67,7 +67,7 @@ chrome.runtime.sendMessage({}, response => {
                 "Stacks (before)"                                                       : "Piles (avant)",
                 "Stacks (after)"                                                        : "Piles (après)"
             },
-            "jp": {
+            "ja": {
                 "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
                 "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
