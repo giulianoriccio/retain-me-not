@@ -32,22 +32,26 @@
 .rmn_loaded .item-list__storable::after,
 .rmn_loaded .item-list__salvageable::after,
 .rmn_loaded .item-list__seasonal::after {
-    content: "";
     display: inline-block;
-    border-radius: 50%;
     height: 16px;
     width: 16px;
+    border-radius: 50%;
+    padding: 3px;
+    line-height: 16px;
+    color: #ffffff;
 }
 
 .rmn_loaded .item-list__storable.storable_sign--0::after,
 .rmn_loaded .item-list__salvageable.salvageable_sign--0::after,
 .rmn_loaded .item-list__seasonal.seasonal_sign--0::after {
+    content: "✘";
     background: #993d3d;
 }
 
 .rmn_loaded .item-list__storable.storable_sign--1::after,
 .rmn_loaded .item-list__salvageable.salvageable_sign--1::after,
 .rmn_loaded .item-list__seasonal.seasonal_sign--1::after {
+    content: "✔";
     background: #6a993d;
 }
 
