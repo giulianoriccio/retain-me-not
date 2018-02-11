@@ -19,6 +19,8 @@
     }],
 
     "permissions": [
-        "storage"
+        "storage",
+        "https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/",
+        "https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/"
     ]
   }
