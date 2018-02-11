@@ -336,7 +336,7 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-storable-retainers">` +
-                            Object.keys(report.storables[lodestone_id]).map(retainer => `<li>${retainer} (${report.storables[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.storables[lodestone_id]).map(retainer => `<li>${retainer} (${report.storables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -354,7 +354,7 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-salvageable-retainers">` +
-                            Object.keys(report.salvageables[lodestone_id]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.salvageables[lodestone_id]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -372,7 +372,7 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-seasonal-retainers">` +
-                            Object.keys(report.seasonals[lodestone_id]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.seasonals[lodestone_id]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -419,11 +419,11 @@ chrome.runtime.sendMessage({}, response => {
                         -- stackables_stats[quality].min_stacks;
                         -- stackables_stats["fnq"].min_stacks;
 
-                        return '';
+                        return "";
                     }
 
                     return Sanitizer.escapeHTML`<li>${retainer} (${stack_quantity})</li>`;
-                }).join('')).join('');
+                }).join("")).join("");
 
                 if (stackables_stats[quality].min_stacks < stackables_stats[quality].total_stacks) {
                     stackables_list.insertAdjacentHTML(
@@ -451,13 +451,13 @@ chrome.runtime.sendMessage({}, response => {
                     return ["nq", "hq"].map(quality => {
                         return retainers[retainer][quality].map(stack_quantity => {
                             if (stack_quantity == stackable_items[lodestone_id]) {
-                                return '';
+                                return "";
                             }
 
                             return Sanitizer.escapeHTML`<li>${retainer} (${stack_quantity}${quality == "hq" ? " HQ" : ""})</li>`;
-                        }).join('')
-                    }).join('');
-                }).join('');
+                        }).join("")
+                    }).join("");
+                }).join("");
 
                 stackables_list.insertAdjacentHTML(
                     "beforeend",
@@ -490,7 +490,7 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-duplicate-retainers">` +
-                            Object.keys(report.duplicates[lodestone_id]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.duplicates[lodestone_id]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
