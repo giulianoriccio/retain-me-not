@@ -3,7 +3,7 @@
 
 This is a web extension that suggests which items to throw away or stack together to reduce the number of occupied slots on your retainers.
 
-It finds out which items can be stored in your Armoire, can be repurchased from the Calamity Salvager, can be stacked together, or are duplicates.
+It finds out which items can be stored in your Armoire, can be repurchased from the Calamity Salvager or the Recompense Officer, can be stacked together, or are duplicates.
 The information is then shown on your retainer's inventory page.
 
 The search is limited to your retainers' inventory since it's the only storage exposed on the lodestone.
