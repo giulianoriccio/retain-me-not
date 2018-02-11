@@ -5,12 +5,14 @@ chrome.runtime.sendMessage({}, response => {
 
     var storable_ids    = response.storable_ids,
         salvageable_ids = response.salvageable_ids,
+        seasonal_ids    = response.seasonal_ids,
         stackable_items = response.stackable_items,
         retainers_items = {},
         item_names      = {},
         report          = {
             "storables"   : {},
             "salvageables": {},
+            "seasonals"   : {},
             "duplicates"  : {},
             "stackables"  : {}
         },
@@ -18,10 +20,13 @@ chrome.runtime.sendMessage({}, response => {
             "en-gb": {
                 "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)",
                 "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)",
+                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required",
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)",
                 "Duplicates"                                                            : "Duplicates",
                 "Storable"                                                              : "Storable",
                 "Salvageable"                                                           : "Salvageable",
+                "Seasonal"                                                              : "Seasonal",
                 "Stackable"                                                             : "Stackable",
                 "Retainers"                                                             : "Retainers",
                 "Items"                                                                 : "Items",
@@ -31,10 +36,13 @@ chrome.runtime.sendMessage({}, response => {
             "en-us": {
                 "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)",
                 "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)",
+                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required",
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)",
                 "Duplicates"                                                            : "Duplicates",
                 "Storable"                                                              : "Storable",
                 "Salvageable"                                                           : "Salvageable",
+                "Seasonal"                                                              : "Seasonal",
                 "Stackable"                                                             : "Stackable",
                 "Retainers"                                                             : "Retainers",
                 "Items"                                                                 : "Items",
@@ -42,39 +50,48 @@ chrome.runtime.sendMessage({}, response => {
                 "Stacks (after)"                                                        : "Stacks (after)"
             },
             "de": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
+                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO: translate
+                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
+                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO                                                            : translate
+                "Duplicates"                                                            : "Duplicates", // TO-DO: translate
                 "Storable"                                                              : "Lagerfähigen",
-                "Salvageable"                                                           : "Salvageable", // TO-DO                                                           : translate
-                "Stackable"                                                             : "Stackable", // TO-DO                                                             : translate
+                "Salvageable"                                                           : "Salvageable", // TO-DO: translate
+                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
+                "Stackable"                                                             : "Stackable", // TO-DO: translate
                 "Retainers"                                                             : "Gehilfen",
                 "Items"                                                                 : "Gegenstände",
                 "Stacks (before)"                                                       : "Stapelzahl (vorher)",
                 "Stacks (after)"                                                        : "Stapelzahl (danach)"
             },
             "fr": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO                                                            : translate
+                "Storables (items you can store in your Armoire)"                       : "Stockable (objets que vous pouvez ranger dans votre Bahut)",
+                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Consignable (objets que vous pouvez racheter au Consigneur)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
+                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
+                "Stackables (items you can stack together to reduce the occupied slots)": "Empilable (objets que vous pouvez empiler ensemble pour réduire leur place)",
+                "Duplicates"                                                            : "Doublons",
                 "Storable"                                                              : "Stockable",
-                "Salvageable"                                                           : "Salvageable", // TO-DO                                                           : translate
-                "Stackable"                                                             : "Stackable", // TO-DO                                                             : translate
+                "Salvageable"                                                           : "Consignable",
+                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
+                "Stackable"                                                             : "Empilable",
                 "Retainers"                                                             : "Servants",
                 "Items"                                                                 : "Objets",
                 "Stacks (before)"                                                       : "Piles (avant)",
                 "Stacks (after)"                                                        : "Piles (après)"
             },
             "ja": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO                       : translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO    : translate
+                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO: translate
+                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
+                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
                 "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO                                                            : translate
-                "Storable"                                                              : "Storable", // TO-DO                                                              : translate
-                "Salvageable"                                                           : "Salvageable", // TO-DO                                                           : translate
-                "Stackable"                                                             : "Stackable", // TO-DO                                                             : translate
+                "Duplicates"                                                            : "Duplicates", // TO-DO: translate
+                "Storable"                                                              : "Storable", // TO-DO: translate
+                "Salvageable"                                                           : "Salvageable", // TO-DO: translate
+                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
+                "Stackable"                                                             : "Stackable", // TO-DO: translate
                 "Retainers"                                                             : "リテイナー",
                 "Items"                                                                 : "アイテム",
                 "Stacks"                                                                : "スタック",
@@ -112,6 +129,14 @@ chrome.runtime.sendMessage({}, response => {
                 </ul>
                 <ul class="item-list--salvageable">
                 </ul>
+                <h3 class="heading--md">${_["Seasonals (items you can repurchase from the Recompense Officer *)"]}<div class="heading--sm" style="padding: 0">${_["* seasonal quest achievement required"]}</div></h3>
+                <ul class="item-list__header">
+                    <li class="item-list__header__cell item-list__header__rmn-seasonal--name">${_["Items"]}</li>
+                    <li class="item-list__header__cell__spacer"></li>
+                    <li class="item-list__header__cell item-list__header__rmn-seasonal--retainers">${_["Retainers"]}</li>
+                </ul>
+                <ul class="item-list--seasonal">
+                </ul>
                 <h3 class="heading--md">${_["Stackables (items you can stack together to reduce the occupied slots)"]}</h3>
                 <ul class="item-list__header">
                     <li class="item-list__header__cell item-list__header__rmn-stackable--name">${_["Items"]}</li>
@@ -137,6 +162,7 @@ chrome.runtime.sendMessage({}, response => {
 
     var storables_list    = document.querySelector(".item-list--storable"),
         salvageables_list = document.querySelector(".item-list--salvageable"),
+        seasonals_list    = document.querySelector(".item-list--seasonal"),
         stackables_list   = document.querySelector(".item-list--stackable"),
         duplicates_list   = document.querySelector(".item-list--duplicate");
 
@@ -153,6 +179,7 @@ chrome.runtime.sendMessage({}, response => {
         Sanitizer.escapeHTML`
             <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--storable">${_["Storable"]}</li>
             <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--salvageable">${_["Salvageable"]}</li>
+            <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--seasonal">${_["Seasonal"]}</li>
         `
     );
 
@@ -170,6 +197,12 @@ chrome.runtime.sendMessage({}, response => {
             item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--1"></div>`);
         } else {
             item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--0"></div>`);
+        }
+
+        if (seasonal_ids.indexOf(lodestone_id) !== -1) {
+            item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--1"></div>`);
+        } else {
+            item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--0"></div>`);
         }
     });
 
@@ -212,6 +245,18 @@ chrome.runtime.sendMessage({}, response => {
                     }
 
                     ++ report.salvageables[lodestone_id][retainer_name];
+                }
+
+                if (seasonal_ids.indexOf(lodestone_id) !== -1) {
+                    if (!(lodestone_id in report.seasonals)) {
+                        report.seasonals[lodestone_id] = {};
+                    }
+
+                    if (!(retainer_name in report.seasonals[lodestone_id])) {
+                        report.seasonals[lodestone_id][retainer_name] = 0;
+                    }
+
+                    ++ report.seasonals[lodestone_id][retainer_name];
                 }
 
                 if (!(lodestone_id in retainers_items[retainer_name])) {
@@ -291,7 +336,7 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-storable-retainers">` +
-                            Object.keys(report.storables[lodestone_id]).map(retainer => `<li>${retainer} (${report.storables[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.storables[lodestone_id]).map(retainer => `<li>${retainer} (${report.storables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -309,7 +354,25 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-salvageable-retainers">` +
-                            Object.keys(report.salvageables[lodestone_id]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.salvageables[lodestone_id]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                        </ul>
+                    </li>
+                `
+            );
+        });
+
+        Object.keys(report.seasonals).forEach(lodestone_id => {
+            seasonals_list.insertAdjacentHTML(
+                "beforeend",
+                Sanitizer.escapeHTML`
+                    <li class="item-list__list">
+                        <div class="item-list__name">
+                            <h4 class="item-list__name--inline item-list__relative">
+                                <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}</a>
+                            </h4>
+                        </div>
+                        <ul class="item-list__name item-list__rmn-seasonal-retainers">` +
+                            Object.keys(report.seasonals[lodestone_id]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -328,29 +391,39 @@ chrome.runtime.sendMessage({}, response => {
                         "quantity"    : 0,
                         "total_stacks": 0,
                         "min_stacks"  : 0
+                    },
+                    "fnq": {
+                        "quantity"    : 0,
+                        "total_stacks": 0,
+                        "min_stacks"  : 0
                     }
                 };
 
-            Object.keys(stackables_stats).forEach(quality => {
+            ["nq", "hq"].forEach(quality => {
                 Object.keys(retainers).forEach(retainer => {
                     var stacks = retainers[retainer];
 
                     stackables_stats[quality].total_stacks += stacks[quality].length;
+                    stackables_stats["fnq"].total_stacks   += stacks[quality].length;
                     stackables_stats[quality].quantity     += stacks[quality].reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
+                    stackables_stats["fnq"].quantity       += stacks[quality].reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
                 });
 
                 stackables_stats[quality].min_stacks = Math.ceil(stackables_stats[quality].quantity / stackable_items[lodestone_id]);
+                stackables_stats["fnq"].min_stacks   = Math.ceil(stackables_stats["fnq"].quantity / stackable_items[lodestone_id]);
 
                 var retainers_list = Object.keys(retainers).map(retainer => retainers[retainer][quality].map(stack_quantity => {
                     if (stack_quantity == stackable_items[lodestone_id]) {
                         -- stackables_stats[quality].total_stacks;
+                        -- stackables_stats["fnq"].total_stacks;
                         -- stackables_stats[quality].min_stacks;
+                        -- stackables_stats["fnq"].min_stacks;
 
-                        return '';
+                        return "";
                     }
 
                     return Sanitizer.escapeHTML`<li>${retainer} (${stack_quantity})</li>`;
-                }).join('')).join('');
+                }).join("")).join("");
 
                 if (stackables_stats[quality].min_stacks < stackables_stats[quality].total_stacks) {
                     stackables_list.insertAdjacentHTML(
@@ -359,7 +432,7 @@ chrome.runtime.sendMessage({}, response => {
                             <li class="item-list__list">
                                 <div class="item-list__name">
                                     <h4 class="item-list__name--inline item-list__relative">
-                                        <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]} ${quality == "hq" ? " (HQ)" : ""} </a>
+                                        <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}${quality == "hq" ? " (HQ)" : ""}</a>
                                     </h4>
                                 </div>
                                 <ul class="item-list__name item-list__rmn-stackable-retainers">` +
@@ -372,6 +445,38 @@ chrome.runtime.sendMessage({}, response => {
                     );
                 }
             });
+
+            if (stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
+                var retainers_list = Object.keys(retainers).map(retainer => {
+                    return ["nq", "hq"].map(quality => {
+                        return retainers[retainer][quality].map(stack_quantity => {
+                            if (stack_quantity == stackable_items[lodestone_id]) {
+                                return "";
+                            }
+
+                            return Sanitizer.escapeHTML`<li>${retainer} (${stack_quantity}${quality == "hq" ? " HQ" : ""})</li>`;
+                        }).join("")
+                    }).join("");
+                }).join("");
+
+                stackables_list.insertAdjacentHTML(
+                    "beforeend",
+                    Sanitizer.escapeHTML`
+                        <li class="item-list__list">
+                            <div class="item-list__name">
+                                <h4 class="item-list__name--inline item-list__relative">
+                                    <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]} (HQ⇒NQ)</a>
+                                </h4>
+                            </div>
+                            <ul class="item-list__name item-list__rmn-stackable-retainers">` +
+                                retainers_list + Sanitizer.escapeHTML`
+                            </ul>
+                            <p class="item-list__number item-list__rmn-stackable-total-stacks">${stackables_stats["fnq"].total_stacks}</p>
+                            <p class="item-list__number item-list__rmn-stackable-min-stacks">${stackables_stats["fnq"].min_stacks}</p>
+                        </li>
+                    `
+                );
+            }
         });
 
         Object.keys(report.duplicates).forEach(lodestone_id => {
@@ -385,16 +490,16 @@ chrome.runtime.sendMessage({}, response => {
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-duplicate-retainers">` +
-                            Object.keys(report.duplicates[lodestone_id]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_id][retainer]})</li>`).join('') + Sanitizer.escapeHTML`
+                            Object.keys(report.duplicates[lodestone_id]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
             );
         });
 
-        [["storables", storables_list], ["salvageables", salvageables_list], ["stackables", stackables_list], ["duplicates", duplicates_list]].forEach(pair => {
-            if (!Object.keys(report[pair[0]]).length) {
-                pair[1].insertAdjacentHTML(
+        [storables_list, salvageables_list, seasonals_list, stackables_list, duplicates_list].forEach(list => {
+            if (!list.querySelector(".item-list__list")) {
+                list.insertAdjacentHTML(
                     "beforeend",
                     `<li class="item-list__list">
                         <div class="item-list__name">
