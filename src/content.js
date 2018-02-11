@@ -391,23 +391,33 @@ chrome.runtime.sendMessage({}, response => {
                         "quantity"    : 0,
                         "total_stacks": 0,
                         "min_stacks"  : 0
+                    },
+                    "fnq": {
+                        "quantity"    : 0,
+                        "total_stacks": 0,
+                        "min_stacks"  : 0
                     }
                 };
 
-            Object.keys(stackables_stats).forEach(quality => {
+            ["nq", "hq"].forEach(quality => {
                 Object.keys(retainers).forEach(retainer => {
                     var stacks = retainers[retainer];
 
                     stackables_stats[quality].total_stacks += stacks[quality].length;
+                    stackables_stats["fnq"].total_stacks   += stacks[quality].length;
                     stackables_stats[quality].quantity     += stacks[quality].reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
+                    stackables_stats["fnq"].quantity       += stacks[quality].reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
                 });
 
                 stackables_stats[quality].min_stacks = Math.ceil(stackables_stats[quality].quantity / stackable_items[lodestone_id]);
+                stackables_stats["fnq"].min_stacks   = Math.ceil(stackables_stats["fnq"].quantity / stackable_items[lodestone_id]);
 
                 var retainers_list = Object.keys(retainers).map(retainer => retainers[retainer][quality].map(stack_quantity => {
                     if (stack_quantity == stackable_items[lodestone_id]) {
                         -- stackables_stats[quality].total_stacks;
+                        -- stackables_stats["fnq"].total_stacks;
                         -- stackables_stats[quality].min_stacks;
+                        -- stackables_stats["fnq"].min_stacks;
 
                         return '';
                     }
@@ -422,7 +432,7 @@ chrome.runtime.sendMessage({}, response => {
                             <li class="item-list__list">
                                 <div class="item-list__name">
                                     <h4 class="item-list__name--inline item-list__relative">
-                                        <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]} ${quality == "hq" ? " (HQ)" : ""} </a>
+                                        <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}${quality == "hq" ? " (HQ)" : ""}</a>
                                     </h4>
                                 </div>
                                 <ul class="item-list__name item-list__rmn-stackable-retainers">` +
@@ -435,6 +445,38 @@ chrome.runtime.sendMessage({}, response => {
                     );
                 }
             });
+
+            if (stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
+                var retainers_list = Object.keys(retainers).map(retainer => {
+                    return ["nq", "hq"].map(quality => {
+                        return retainers[retainer][quality].map(stack_quantity => {
+                            if (stack_quantity == stackable_items[lodestone_id]) {
+                                return '';
+                            }
+
+                            return Sanitizer.escapeHTML`<li>${retainer} (${stack_quantity}${quality == "hq" ? " HQ" : ""})</li>`;
+                        }).join('')
+                    }).join('');
+                }).join('');
+
+                stackables_list.insertAdjacentHTML(
+                    "beforeend",
+                    Sanitizer.escapeHTML`
+                        <li class="item-list__list">
+                            <div class="item-list__name">
+                                <h4 class="item-list__name--inline item-list__relative">
+                                    <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]} (HQ⇒NQ)</a>
+                                </h4>
+                            </div>
+                            <ul class="item-list__name item-list__rmn-stackable-retainers">` +
+                                retainers_list + Sanitizer.escapeHTML`
+                            </ul>
+                            <p class="item-list__number item-list__rmn-stackable-total-stacks">${stackables_stats["fnq"].total_stacks}</p>
+                            <p class="item-list__number item-list__rmn-stackable-min-stacks">${stackables_stats["fnq"].min_stacks}</p>
+                        </li>
+                    `
+                );
+            }
         });
 
         Object.keys(report.duplicates).forEach(lodestone_id => {
