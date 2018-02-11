@@ -32,15 +32,9 @@ chrome.storage.local.get(["storable_ids", "stackable_items"], data => {
         }).always(() => { items = undefined; });
     });
 
-    $.get("https://api.xivdb.com/npc/1006004", data => {
-        data.shops.forEach(shop => {
-            shop.items.forEach(item => {
-                if (!item.lodestone_id || item.stack_size > 1) {
-                    return;
-                }
-
-                salvageable_ids.push(item.lodestone_id);
-            });
+    $.get("https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/", response => {
+        (new DOMParser()).parseFromString(response, "text/html").querySelectorAll("#sys_shop_type_gil a.db_popup").forEach(item => {
+            salvageable_ids.push(item.href.match(/db\/item\/([a-z0-9]+)\//)[1]);
         });
 
         chrome.storage.local.set({"salvageable_ids": salvageable_ids});
