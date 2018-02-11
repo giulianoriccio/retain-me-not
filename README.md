@@ -8,7 +8,7 @@ The information is then shown on your retainer's inventory page.
 
 The search is limited to your retainers' inventory since it's the only storage exposed on the lodestone.
 
-The data is provided by [XIVDB API](/xivdb/api).
+The data is provided by [XIVDB API](/xivdb/api) and lodestone.
 
 ## Extensions
 - Chrome: https://chrome.google.com/webstore/detail/retain-me-not/elcalhmjjbiopoblmomhgelkfafpgogb
