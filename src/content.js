@@ -497,9 +497,9 @@ chrome.runtime.sendMessage({}, response => {
             );
         });
 
-        [["storables", storables_list], ["salvageables", salvageables_list], ["seasonals", seasonals_list], ["stackables", stackables_list], ["duplicates", duplicates_list]].forEach(pair => {
-            if (!Object.keys(report[pair[0]]).length) {
-                pair[1].insertAdjacentHTML(
+        [storables_list, salvageables_list, seasonals_list, stackables_list, duplicates_list].forEach(list => {
+            if (!list.querySelector(".item-list__list")) {
+                list.insertAdjacentHTML(
                     "beforeend",
                     `<li class="item-list__list">
                         <div class="item-list__name">
