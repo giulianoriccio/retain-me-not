@@ -74,7 +74,7 @@ chrome.runtime.sendMessage({}, response => {
                 "Duplicates"                                                            : "Doublons",
                 "Storable"                                                              : "Stockable",
                 "Salvageable"                                                           : "Consignable",
-                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
+                "Seasonal"                                                              : "Saisonnier",
                 "Stackable"                                                             : "Empilable",
                 "Retainers"                                                             : "Servants",
                 "Items"                                                                 : "Objets",
