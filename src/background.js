@@ -1,9 +1,17 @@
-chrome.storage.local.get(["storable_ids", "stackable_items"], data => {
-    var storable_ids    = ("storable_ids"    in data) ? data.storable_ids   : [],
-        salvageable_ids = ("salvageable_ids" in data) ? data.salvageable_ids: [],
-        seasonal_ids    = ("seasonal_ids"    in data) ? data.seasonal_ids   : [],
-        stackable_items = ("stackable_items" in data) ? data.stackable_items: {},
-        items           = {};
+var storable_ids         = [],
+    salvageable_ids      = [],
+    seasonal_ids         = [],
+    stackable_items      = {},
+    exclude_custom_equip = false;
+
+chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
+    storable_ids         = data.storable_ids;
+    salvageable_ids      = data.salvageable_ids;
+    seasonal_ids         = data.seasonal_ids;
+    stackable_items      = data.stackable_items;
+    exclude_custom_equip = data.exclude_custom_equip;
+
+    var items = {};
 
     $.get("https://api.xivdb.com/item?columns=id,lodestone_id,stack_size", data => {
         data.forEach(item => {
@@ -50,13 +58,27 @@ chrome.storage.local.get(["storable_ids", "stackable_items"], data => {
     });
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (storable_ids.length && salvageable_ids.length && Object.keys(stackable_items).length) {
-            sendResponse({
-                "storable_ids"   : storable_ids,
-                "salvageable_ids": salvageable_ids,
-                "seasonal_ids"   : seasonal_ids,
-                "stackable_items": stackable_items
-            });
+        switch (request.call) {
+            case "get_data":
+                if (storable_ids.length && salvageable_ids.length && Object.keys(stackable_items).length) {
+                    sendResponse({
+                        "storable_ids"        : storable_ids,
+                        "salvageable_ids"     : salvageable_ids,
+                        "seasonal_ids"        : seasonal_ids,
+                        "stackable_items"     : stackable_items,
+                        "exclude_custom_equip": exclude_custom_equip
+                    });
+                }
+
+                break;
+            case "refresh_options":
+                chrome.storage.local.get({"exclude_custom_equip": false}, data => {
+                    exclude_custom_equip = data.exclude_custom_equip;
+                });
+
+                break;
         }
     });
-})
+});
+
+chrome.browserAction.onClicked.addListener(() => chrome.runtime.openOptionsPage());
