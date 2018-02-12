@@ -1,10 +1,12 @@
+var ns = typeof browser == "undefined" ? chrome : browser;var ns = (typeof browser == "undefined") ? chrome : browser;
+
 var storable_ids         = [],
     salvageable_ids      = [],
     seasonal_ids         = [],
     stackable_items      = {},
     exclude_custom_equip = false;
 
-chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
+ns.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
     storable_ids         = data.storable_ids;
     salvageable_ids      = data.salvageable_ids;
     seasonal_ids         = data.seasonal_ids;
@@ -26,7 +28,7 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
             }
         });
 
-        chrome.storage.local.set({"stackable_items": stackable_items});
+        ns.storage.local.set({"stackable_items": stackable_items});
 
         $.get("https://api.xivdb.com/data/armoire", data => {
             Object.keys(data).forEach(index => {
@@ -37,7 +39,7 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
                 storable_ids.push(items[data[index].item]);
             });
 
-            chrome.storage.local.set({"storable_ids": storable_ids});
+            ns.storage.local.set({"storable_ids": storable_ids});
         }).always(() => { items = undefined; });
     });
 
@@ -46,7 +48,7 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
             salvageable_ids.push(item.href.match(/db\/item\/([a-z0-9]+)\//)[1]);
         });
 
-        chrome.storage.local.set({"salvageable_ids": salvageable_ids});
+        ns.storage.local.set({"salvageable_ids": salvageable_ids});
     });
 
     $.get("https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/", response => {
@@ -54,10 +56,10 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
             seasonal_ids.push(item.href.match(/db\/item\/([a-z0-9]+)\//)[1]);
         });
 
-        chrome.storage.local.set({"seasonal_ids": seasonal_ids});
+        ns.storage.local.set({"seasonal_ids": seasonal_ids});
     });
 
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    ns.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.call) {
             case "get_data":
                 if (storable_ids.length && salvageable_ids.length && Object.keys(stackable_items).length) {
@@ -72,7 +74,7 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
 
                 break;
             case "refresh_options":
-                chrome.storage.local.get({"exclude_custom_equip": false}, data => {
+                ns.storage.local.get({"exclude_custom_equip": false}, data => {
                     exclude_custom_equip = data.exclude_custom_equip;
                 });
 
@@ -81,4 +83,4 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_i
     });
 });
 
-chrome.browserAction.onClicked.addListener(() => chrome.runtime.openOptionsPage());
+ns.browserAction.onClicked.addListener(() => ns.runtime.openOptionsPage());

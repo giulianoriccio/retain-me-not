@@ -1,4 +1,6 @@
-chrome.runtime.sendMessage({"call": "get_data"}, response => {
+var ns = (typeof browser == "undefined") ? chrome : browser;
+
+ns.runtime.sendMessage({"call": "get_data"}, response => {
     if (typeof response === "undefined") {
         return;
     }
