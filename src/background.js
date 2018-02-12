@@ -80,3 +80,5 @@ chrome.storage.local.get({"storable_ids": [], "salvageable_ids": {}, "seasonal_i
         }
     });
 });
+
+chrome.browserAction.onClicked.addListener(() => chrome.runtime.openOptionsPage());
