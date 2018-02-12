@@ -69,13 +69,13 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
             "fr": {
                 "Storables (items you can store in your Armoire)"                       : "Stockable (objets que vous pouvez ranger dans votre Bahut)",
                 "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Consignable (objets que vous pouvez racheter au Consigneur)",
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
-                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
+                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Saisonnier (objets que vous pouvez racheter au Responsable Des Récompenses *)",
+                "* seasonal quest achievement required"                                 : "* haut-fait de l'événement saisonnier requis",
                 "Stackables (items you can stack together to reduce the occupied slots)": "Empilable (objets que vous pouvez empiler ensemble pour réduire leur place)",
                 "Duplicates"                                                            : "Doublons",
                 "Storable"                                                              : "Stockable",
                 "Salvageable"                                                           : "Consignable",
-                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
+                "Seasonal"                                                              : "Saisonnier",
                 "Stackable"                                                             : "Empilable",
                 "Retainers"                                                             : "Servants",
                 "Items"                                                                 : "Objets",
