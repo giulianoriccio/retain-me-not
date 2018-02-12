@@ -1,15 +1,16 @@
-chrome.runtime.sendMessage({}, response => {
+chrome.runtime.sendMessage({"call": "get_data"}, response => {
     if (typeof response === "undefined") {
         return;
     }
 
-    var storable_ids    = response.storable_ids,
-        salvageable_ids = response.salvageable_ids,
-        seasonal_ids    = response.seasonal_ids,
-        stackable_items = response.stackable_items,
-        retainers_items = {},
-        item_names      = {},
-        report          = {
+    var storable_ids         = response.storable_ids,
+        salvageable_ids      = response.salvageable_ids,
+        seasonal_ids         = response.seasonal_ids,
+        stackable_items      = response.stackable_items,
+        exclude_custom_equip = response.exclude_custom_equip,
+        retainers_items      = {},
+        item_names           = {},
+        report               = {
             "storables"   : {},
             "salvageables": {},
             "seasonals"   : {},
@@ -187,22 +188,36 @@ chrome.runtime.sendMessage({}, response => {
         var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
             hq           = item.querySelector(".ic_item_quality") !== null;
 
-        if (storable_ids.indexOf(lodestone_id) !== -1) {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--1"></div>`);
+        if (exclude_custom_equip
+            && (
+                item.querySelector(".staining") && item.querySelector(".staining").style.background != ""
+                || item.querySelector(".mirage_staining")
+            )
+            && !(lodestone_id in stackable_items)
+        ) {
+            item.insertAdjacentHTML("beforeend", `
+                <div class="item-list__storable">---</div>
+                <div class="item-list__salvageable">---</div>
+                <div class="item-list__seasonal">---</div>
+            `);
         } else {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--0"></div>`);
-        }
+            if (storable_ids.indexOf(lodestone_id) !== -1) {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--1"></div>`);
+            } else {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--0"></div>`);
+            }
 
-        if (salvageable_ids.indexOf(lodestone_id) !== -1) {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--1"></div>`);
-        } else {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--0"></div>`);
-        }
+            if (salvageable_ids.indexOf(lodestone_id) !== -1) {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--1"></div>`);
+            } else {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--0"></div>`);
+            }
 
-        if (seasonal_ids.indexOf(lodestone_id) !== -1) {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--1"></div>`);
-        } else {
-            item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--0"></div>`);
+            if (seasonal_ids.indexOf(lodestone_id) !== -1) {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--1"></div>`);
+            } else {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--0"></div>`);
+            }
         }
     });
 
@@ -217,9 +232,19 @@ chrome.runtime.sendMessage({}, response => {
 
         promises.push($.get(url, response => {
             (new DOMParser()).parseFromString(response, "text/html").querySelectorAll(".item-list__list").forEach(item => {
-                var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
+                var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1],
                     hq           = item.querySelector(".ic_item_quality") !== null,
                     quantity     = parseInt(item.querySelector(".item-list__number").textContent);
+
+                if (exclude_custom_equip
+                    && (
+                        item.querySelector(".staining") && item.querySelector(".staining").style.background != ""
+                        || item.querySelector(".mirage_staining")
+                    )
+                    && !(lodestone_id in stackable_items)
+                ) {
+                    return;
+                }
 
                 item_names[lodestone_id] = item.querySelector(".item-list__name--inline a").textContent;
 
