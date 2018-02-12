@@ -17,7 +17,7 @@ The data is provided by [XIVDB API](/xivdb/api) and lodestone.
 ## To do
 - [x] Use different symbols for the status icon to help the players with any form of colorblindness
 - [x] Replace XIVDB Calamity Salvager data with [lodestone's](https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/?type=gil)
-- [ ] Add an option to exclude customized armor from the search
+- [x] Add an option to exclude customized armor from the search
 - [ ] Add MS Edge compatibility
 - [x] Consider the option of lowering the quality of HQ items to stack them together with NQ items
 - [ ] Search for items that can be purchased from NPCs
