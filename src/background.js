@@ -4,7 +4,7 @@ var storable_ids         = [],
     stackable_items      = {},
     exclude_custom_equip = false;
 
-chrome.storage.local.get({"storable_ids": [], "salvageable_ids": {}, "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
+chrome.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
     storable_ids         = data.storable_ids;
     salvageable_ids      = data.salvageable_ids;
     seasonal_ids         = data.seasonal_ids;
