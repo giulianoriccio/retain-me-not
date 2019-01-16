@@ -32,9 +32,13 @@
         "js": ["jquery.js", "sanitizer.js", "content.js"]
     }],
 
+    "content_security_policy": "script-src 'self' https://img.finalfantasyxiv.com; object-src 'self'",
+
     "permissions": [
         "storage",
-        "https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/",
-        "https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/"
+        "unlimitedStorage",
+        "https://xivapi.com/*",
+        "https://*.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/",
+        "https://*.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/"
     ]
   }

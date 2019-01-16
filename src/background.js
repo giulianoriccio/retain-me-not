@@ -1,82 +1,123 @@
 var ns = typeof browser == "undefined" ? chrome : browser;var ns = (typeof browser == "undefined") ? chrome : browser;
 
-var storable_ids         = [],
-    salvageable_ids      = [],
-    seasonal_ids         = [],
-    stackable_items      = {},
+var xivapi = {
+        "key"         : '0e1339f00eb14023a206afef',
+        "max_requests": 5,
+        "delay"       : 500
+    },
+    salvageable_items_urls = [
+        'https://de.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/',
+        'https://na.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/',
+        'https://fr.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/',
+        'https://jp.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/'
+    ],
+    seasonal_items_urls = [
+        'https://de.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/',
+        'https://na.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/',
+        'https://fr.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/',
+        'https://jp.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/'
+    ],
+    storable_names       = [],
+    salvageable_names    = [],
+    seasonal_names       = [],
+    stackables_max_size  = {},
     exclude_custom_equip = false;
+    lower_items_quality  = true;
 
-ns.storage.local.get({"storable_ids": [], "salvageable_ids": [], "seasonal_ids": [], "stackable_items": {}, "exclude_custom_equip": false}, data => {
-    storable_ids         = data.storable_ids;
-    salvageable_ids      = data.salvageable_ids;
-    seasonal_ids         = data.seasonal_ids;
-    stackable_items      = data.stackable_items;
+// remove old data (<1.3.0)
+ns.storage.local.remove(["storable_ids", "salvageable_ids", "seasonal_ids", "stackable_items"]);
+ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_names": [], "stackables_max_size": {}, "exclude_custom_equip": false, "lower_items_quality": true}, data => {
+    storable_names       = data.storable_names;
+    salvageable_names    = data.salvageable_names;
+    seasonal_names       = data.seasonal_names;
+    stackables_max_size  = data.stackables_max_size;
     exclude_custom_equip = data.exclude_custom_equip;
+    lower_items_quality  = data.lower_items_quality;
 
-    var items = {};
+    var page = 1;
 
-    $.get("https://api.xivdb.com/item?columns=id,lodestone_id,stack_size", data => {
-        data.forEach(item => {
-            if (!item.lodestone_id) {
-                return;
-            }
+    var scan = () => {
+        $.get("https://xivapi.com/search?c=10&indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=100&page=" + page + "&key=" + xivapi.key , data => {
+            page = data.Pagination.PageNext;
 
-            items[item.id] = item.lodestone_id;
-
-            if (item.stack_size > 1 && item.stack_size < 1000) {
-                stackable_items[item.lodestone_id] = item.stack_size;
-            }
-        });
-
-        ns.storage.local.set({"stackable_items": stackable_items});
-
-        $.get("https://api.xivdb.com/data/armoire", data => {
-            Object.keys(data).forEach(index => {
-                if (!(data[index].item in items)) {
-                    return;
-                }
-
-                storable_ids.push(items[data[index].item]);
+            Object.keys(data.Results).forEach(index => {
+                stackables_max_size[data.Results[index].Name_de] = data.Results[index].StackSize;
+                stackables_max_size[data.Results[index].Name_en] = data.Results[index].StackSize;
+                stackables_max_size[data.Results[index].Name_fr] = data.Results[index].StackSize;
+                stackables_max_size[data.Results[index].Name_ja] = data.Results[index].StackSize;
             });
+        }).done(() => {
+            if (page != null) {
+                setTimeout(scan, (page - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
+            } else {
+                ns.storage.local.set({"stackables_max_size": stackables_max_size});
+            }
+        });
+    };
 
-            ns.storage.local.set({"storable_ids": storable_ids});
-        }).always(() => { items = undefined; });
-    });
+    scan();
 
-    $.get("https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/", response => {
-        (new DOMParser()).parseFromString(response, "text/html").querySelectorAll("#sys_shop_type_gil a.db_popup").forEach(item => {
-            salvageable_ids.push(item.href.match(/db\/item\/([a-z0-9]+)\//)[1]);
+    $.get("https://xivapi.com/Cabinet?columns=Item.Name_*&limit=3000&key=" + xivapi.key , data => {
+        Object.keys(data.Results).forEach(index => {
+            storable_names.push(data.Results[index].Item.Name_de);
+            storable_names.push(data.Results[index].Item.Name_en);
+            storable_names.push(data.Results[index].Item.Name_fr);
+            storable_names.push(data.Results[index].Item.Name_ja);
         });
 
-        ns.storage.local.set({"salvageable_ids": salvageable_ids});
+        ns.storage.local.set({"storable_names": storable_names});
     });
 
-    $.get("https://eu.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/", response => {
-        (new DOMParser()).parseFromString(response, "text/html").querySelectorAll("#sys_shop_type_gil a.db_popup").forEach(item => {
-            seasonal_ids.push(item.href.match(/db\/item\/([a-z0-9]+)\//)[1]);
-        });
+    var salvageable_promises = [];
 
-        ns.storage.local.set({"seasonal_ids": seasonal_ids});
+    salvageable_items_urls.forEach(url => {
+        salvageable_promises.push($.get(url, response => {
+            (new DOMParser()).parseFromString(response, "text/html").querySelectorAll("#sys_shop_type_gil a.db_popup").forEach(item => {
+                salvageable_names.push(item.textContent);
+            });
+        }));
     });
+
+    $.when.apply($, salvageable_promises).done(() => ns.storage.local.set({"salvageable_names": salvageable_names}));
+
+    var seasonal_promises = [];
+
+    seasonal_items_urls.forEach(url => {
+        seasonal_promises.push($.get(url, response => {
+            (new DOMParser()).parseFromString(response, "text/html").querySelectorAll("#sys_shop_type_gil a.db_popup").forEach(item => {
+                seasonal_names.push(item.textContent);
+            });
+        }));
+    });
+
+    $.when.apply($, seasonal_promises).done(() => ns.storage.local.set({"seasonal_names": seasonal_names}));
 
     ns.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.call) {
             case "get_data":
-                if (storable_ids.length && salvageable_ids.length && Object.keys(stackable_items).length) {
+                if (storable_names.length && salvageable_names.length && Object.keys(stackables_max_size).length) {
                     sendResponse({
-                        "storable_ids"        : storable_ids,
-                        "salvageable_ids"     : salvageable_ids,
-                        "seasonal_ids"        : seasonal_ids,
-                        "stackable_items"     : stackable_items,
-                        "exclude_custom_equip": exclude_custom_equip
+                        "storable_names"      : storable_names,
+                        "salvageable_names"   : salvageable_names,
+                        "seasonal_names"      : seasonal_names,
+                        "stackables_max_size" : stackables_max_size,
+                        "exclude_custom_equip": exclude_custom_equip,
+                        "lower_items_quality" : lower_items_quality
                     });
                 }
 
                 break;
             case "refresh_options":
-                ns.storage.local.get({"exclude_custom_equip": false}, data => {
-                    exclude_custom_equip = data.exclude_custom_equip;
-                });
+                ns.storage.local.get(
+                    {
+                        "exclude_custom_equip": false,
+                        "lower_items_quality" : true
+                    },
+                    data => {
+                        exclude_custom_equip = data.exclude_custom_equip;
+                        lower_items_quality  = data.lower_items_quality;
+                    }
+                );
 
                 break;
         }
