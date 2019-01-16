@@ -10,6 +10,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
         seasonal_ids         = response.seasonal_ids,
         stackable_items      = response.stackable_items,
         exclude_custom_equip = response.exclude_custom_equip,
+        lower_items_quality  = response.lower_items_quality,
         retainers_items      = {},
         item_names           = {},
         report               = {
@@ -473,7 +474,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                 }
             });
 
-            if (stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
+            if (lower_items_quality && stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
                 var retainers_list = Object.keys(retainers).map(retainer => {
                     return ["nq", "hq"].map(quality => {
                         return retainers[retainer][quality].map(stack_quantity => {
