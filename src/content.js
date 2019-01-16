@@ -1,15 +1,22 @@
-chrome.runtime.sendMessage({"call": "get_data"}, response => {
+var ns = (typeof browser == "undefined") ? chrome : browser;
+
+ns.runtime.sendMessage({"call": "get_data"}, response => {
     if (typeof response === "undefined") {
         return;
     }
 
-    var storable_ids         = response.storable_ids,
-        salvageable_ids      = response.salvageable_ids,
-        seasonal_ids         = response.seasonal_ids,
-        stackable_items      = response.stackable_items,
+    var s = document.createElement('script');
+    s.src = "https://img.finalfantasyxiv.com/lds/pc/global/js/eorzeadb/loader.js?v2";
+    document.head.appendChild(s);
+
+    var storable_names       = response.storable_names,
+        salvageable_names    = response.salvageable_names,
+        seasonal_names       = response.seasonal_names,
+        stackables_max_size  = response.stackables_max_size;
         exclude_custom_equip = response.exclude_custom_equip,
+        lower_items_quality  = response.lower_items_quality,
+        lodestone_ids        = {},
         retainers_items      = {},
-        item_names           = {},
         report               = {
             "storables"   : {},
             "salvageables": {},
@@ -185,15 +192,18 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
     );
 
     document.querySelectorAll(".item-list__list").forEach(item => {
-        var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
-            hq           = item.querySelector(".ic_item_quality") !== null;
+        var lodestone_name = item.querySelector(".item-list__name--inline a").textContent,
+            lodestone_id   = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
+            hq             = item.querySelector(".ic_item_quality") !== null;
+
+        lodestone_ids[lodestone_name] = lodestone_id;
 
         if (exclude_custom_equip
             && (
                 item.querySelector(".staining") && item.querySelector(".staining").style.background != ""
                 || item.querySelector(".mirage_staining")
             )
-            && !(lodestone_id in stackable_items)
+            && !(lodestone_name in stackables_max_size)
         ) {
             item.insertAdjacentHTML("beforeend", `
                 <div class="item-list__storable">---</div>
@@ -201,19 +211,19 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
                 <div class="item-list__seasonal">---</div>
             `);
         } else {
-            if (storable_ids.indexOf(lodestone_id) !== -1) {
+            if (storable_names.indexOf(lodestone_name) !== -1) {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--1"></div>`);
             } else {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__storable storable_sign--0"></div>`);
             }
 
-            if (salvageable_ids.indexOf(lodestone_id) !== -1) {
+            if (salvageable_names.indexOf(lodestone_name) !== -1) {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--1"></div>`);
             } else {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__salvageable salvageable_sign--0"></div>`);
             }
 
-            if (seasonal_ids.indexOf(lodestone_id) !== -1) {
+            if (seasonal_names.indexOf(lodestone_name) !== -1) {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--1"></div>`);
             } else {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--0"></div>`);
@@ -232,66 +242,67 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
 
         promises.push($.get(url, response => {
             (new DOMParser()).parseFromString(response, "text/html").querySelectorAll(".item-list__list").forEach(item => {
-                var lodestone_id = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1],
-                    hq           = item.querySelector(".ic_item_quality") !== null,
-                    quantity     = parseInt(item.querySelector(".item-list__number").textContent);
+                var lodestone_name = item.querySelector(".item-list__name--inline a").textContent,
+                    lodestone_id   = item.querySelector(".item-list__name--inline a").href.match(/db\/item\/([a-z0-9]+)\//)[1];
+                    hq             = item.querySelector(".ic_item_quality") !== null,
+                    quantity       = parseInt(item.querySelector(".item-list__number").textContent);
+
+                lodestone_ids[lodestone_name] = lodestone_id;
 
                 if (exclude_custom_equip
                     && (
                         item.querySelector(".staining") && item.querySelector(".staining").style.background != ""
                         || item.querySelector(".mirage_staining")
                     )
-                    && !(lodestone_id in stackable_items)
+                    && !(lodestone_name in stackables_max_size)
                 ) {
                     return;
                 }
 
-                item_names[lodestone_id] = item.querySelector(".item-list__name--inline a").textContent;
-
-                if (storable_ids.indexOf(lodestone_id) !== -1) {
-                    if (!(lodestone_id in report.storables)) {
-                        report.storables[lodestone_id] = {};
+                if (storable_names.indexOf(lodestone_name) !== -1) {
+                    if (!(lodestone_name in report.storables)) {
+                        report.storables[lodestone_name] = {};
                     }
 
-                    if (!(retainer_name in report.storables[lodestone_id])) {
-                        report.storables[lodestone_id][retainer_name] = 0;
+                    if (!(retainer_name in report.storables[lodestone_name])) {
+                        report.storables[lodestone_name][retainer_name] = 0;
                     }
 
-                    ++ report.storables[lodestone_id][retainer_name];
+                    ++ report.storables[lodestone_name][retainer_name];
                 }
 
-                if (salvageable_ids.indexOf(lodestone_id) !== -1) {
-                    if (!(lodestone_id in report.salvageables)) {
-                        report.salvageables[lodestone_id] = {};
+                if (salvageable_names.indexOf(lodestone_name) !== -1) {
+                    if (!(lodestone_name in report.salvageables)) {
+                        report.salvageables[lodestone_name] = {};
                     }
 
-                    if (!(retainer_name in report.salvageables[lodestone_id])) {
-                        report.salvageables[lodestone_id][retainer_name] = 0;
+                    if (!(retainer_name in report.salvageables[lodestone_name])) {
+                        report.salvageables[lodestone_name][retainer_name] = 0;
                     }
 
-                    ++ report.salvageables[lodestone_id][retainer_name];
+                    ++ report.salvageables[lodestone_name][retainer_name];
                 }
 
-                if (seasonal_ids.indexOf(lodestone_id) !== -1) {
-                    if (!(lodestone_id in report.seasonals)) {
-                        report.seasonals[lodestone_id] = {};
+                if (seasonal_names.indexOf(lodestone_name) !== -1) {
+                    if (!(lodestone_name in report.seasonals)) {
+                        report.seasonals[lodestone_name] = {};
                     }
 
-                    if (!(retainer_name in report.seasonals[lodestone_id])) {
-                        report.seasonals[lodestone_id][retainer_name] = 0;
+                    if (!(retainer_name in report.seasonals[lodestone_name])) {
+                        report.seasonals[lodestone_name][retainer_name] = 0;
                     }
 
-                    ++ report.seasonals[lodestone_id][retainer_name];
+                    ++ report.seasonals[lodestone_name][retainer_name];
                 }
 
-                if (!(lodestone_id in retainers_items[retainer_name])) {
-                    retainers_items[retainer_name][lodestone_id] = {
+                if (!(lodestone_name in retainers_items[retainer_name])) {
+                    retainers_items[retainer_name][lodestone_name] = {
                         "nq": [],
                         "hq": []
                     };
                 }
 
-                retainers_items[retainer_name][lodestone_id][hq ? "hq" : "nq"].push(quantity);
+                retainers_items[retainer_name][lodestone_name][hq ? "hq" : "nq"].push(quantity);
             });
 
             ++ processed;
@@ -310,102 +321,102 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
         Object.keys(retainers_items).forEach(retainer => {
             var items = retainers_items[retainer];
 
-            Object.keys(items).forEach(lodestone_id => {
-                var stacks = items[lodestone_id];
+            Object.keys(items).forEach(lodestone_name => {
+                var stacks = items[lodestone_name];
 
                 Object.keys(retainers_items).forEach(other_retainer => {
                     var other_items = retainers_items[other_retainer];
 
-                    if (!(lodestone_id in other_items)) {
+                    if (!(lodestone_name in other_items)) {
                         return;
                     }
 
-                    if (lodestone_id in stackable_items) {
-                        if (!(lodestone_id in report.stackables)) {
-                            report.stackables[lodestone_id] = {};
+                    if (lodestone_name in stackables_max_size) {
+                        if (!(lodestone_name in report.stackables)) {
+                            report.stackables[lodestone_name] = {};
                         }
 
-                        report.stackables[lodestone_id][retainer]       = stacks;
-                        report.stackables[lodestone_id][other_retainer] = other_items[lodestone_id];
+                        report.stackables[lodestone_name][retainer]       = stacks;
+                        report.stackables[lodestone_name][other_retainer] = other_items[lodestone_name];
                     } else {
                         if (retainer == other_retainer) {
                             return;
                         }
 
-                        if (!(lodestone_id in report.duplicates)) {
-                            report.duplicates[lodestone_id] = {};
+                        if (!(lodestone_name in report.duplicates)) {
+                            report.duplicates[lodestone_name] = {};
                         }
 
-                        if (!(retainer in report.duplicates[lodestone_id])) {
-                            report.duplicates[lodestone_id][retainer] = stacks.nq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0)
-                                                                      + stacks.hq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
+                        if (!(retainer in report.duplicates[lodestone_name])) {
+                            report.duplicates[lodestone_name][retainer] = stacks.nq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0)
+                                                                        + stacks.hq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
                         }
 
-                        if (!(other_retainer in report.duplicates[lodestone_id])) {
-                            report.duplicates[lodestone_id][other_retainer] = other_items[lodestone_id].nq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0)
-                                                                            + other_items[lodestone_id].hq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
+                        if (!(other_retainer in report.duplicates[lodestone_name])) {
+                            report.duplicates[lodestone_name][other_retainer] = other_items[lodestone_name].nq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0)
+                                                                              + other_items[lodestone_name].hq.reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
                         }
                     }
                 });
             });
         });
 
-        Object.keys(report.storables).forEach(lodestone_id => {
+        Object.keys(report.storables).forEach(lodestone_name => {
             storables_list.insertAdjacentHTML(
                 "beforeend",
                 Sanitizer.escapeHTML`
                     <li class="item-list__list">
                         <div class="item-list__name">
                             <h4 class="item-list__name--inline item-list__relative">
-                                <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}</a>
+                                <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}</a>
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-storable-retainers">` +
-                            Object.keys(report.storables[lodestone_id]).map(retainer => `<li>${retainer} (${report.storables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                            Object.keys(report.storables[lodestone_name]).map(retainer => `<li>${retainer} (${report.storables[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
             );
         });
 
-        Object.keys(report.salvageables).forEach(lodestone_id => {
+        Object.keys(report.salvageables).forEach(lodestone_name => {
             salvageables_list.insertAdjacentHTML(
                 "beforeend",
                 Sanitizer.escapeHTML`
                     <li class="item-list__list">
                         <div class="item-list__name">
                             <h4 class="item-list__name--inline item-list__relative">
-                                <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}</a>
+                                <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}</a>
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-salvageable-retainers">` +
-                            Object.keys(report.salvageables[lodestone_id]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                            Object.keys(report.salvageables[lodestone_name]).map(retainer => `<li>${retainer} (${report.salvageables[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
             );
         });
 
-        Object.keys(report.seasonals).forEach(lodestone_id => {
+        Object.keys(report.seasonals).forEach(lodestone_name => {
             seasonals_list.insertAdjacentHTML(
                 "beforeend",
                 Sanitizer.escapeHTML`
                     <li class="item-list__list">
                         <div class="item-list__name">
                             <h4 class="item-list__name--inline item-list__relative">
-                                <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}</a>
+                                <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}</a>
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-seasonal-retainers">` +
-                            Object.keys(report.seasonals[lodestone_id]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                            Object.keys(report.seasonals[lodestone_name]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
             );
         });
 
-        Object.keys(report.stackables).forEach(lodestone_id => {
-            var retainers        = report.stackables[lodestone_id],
+        Object.keys(report.stackables).forEach(lodestone_name => {
+            var retainers        = report.stackables[lodestone_name],
                 stackables_stats = {
                     "nq": {
                         "quantity"    : 0,
@@ -434,11 +445,11 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
                     stackables_stats["fnq"].quantity       += stacks[quality].reduce((total_quantity, current_quantity) => total_quantity + current_quantity, 0);
                 });
 
-                stackables_stats[quality].min_stacks = Math.ceil(stackables_stats[quality].quantity / stackable_items[lodestone_id]);
-                stackables_stats["fnq"].min_stacks   = Math.ceil(stackables_stats["fnq"].quantity / stackable_items[lodestone_id]);
+                stackables_stats[quality].min_stacks = Math.ceil(stackables_stats[quality].quantity / stackables_max_size[lodestone_name]);
+                stackables_stats["fnq"].min_stacks   = Math.ceil(stackables_stats["fnq"].quantity / stackables_max_size[lodestone_name]);
 
                 var retainers_list = Object.keys(retainers).map(retainer => retainers[retainer][quality].map(stack_quantity => {
-                    if (stack_quantity == stackable_items[lodestone_id]) {
+                    if (stack_quantity == stackables_max_size[lodestone_name]) {
                         -- stackables_stats[quality].total_stacks;
                         -- stackables_stats["fnq"].total_stacks;
                         -- stackables_stats[quality].min_stacks;
@@ -457,7 +468,7 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
                             <li class="item-list__list">
                                 <div class="item-list__name">
                                     <h4 class="item-list__name--inline item-list__relative">
-                                        <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}${quality == "hq" ? " (HQ)" : ""}</a>
+                                        <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}${quality == "hq" ? " (HQ)" : ""}</a>
                                     </h4>
                                 </div>
                                 <ul class="item-list__name item-list__rmn-stackable-retainers">` +
@@ -471,11 +482,11 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
                 }
             });
 
-            if (stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
+            if (lower_items_quality && stackables_stats.nq.min_stacks + stackables_stats.hq.min_stacks > stackables_stats.fnq.min_stacks) {
                 var retainers_list = Object.keys(retainers).map(retainer => {
                     return ["nq", "hq"].map(quality => {
                         return retainers[retainer][quality].map(stack_quantity => {
-                            if (stack_quantity == stackable_items[lodestone_id]) {
+                            if (stack_quantity == stackables_max_size[lodestone_name]) {
                                 return "";
                             }
 
@@ -490,7 +501,7 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
                         <li class="item-list__list">
                             <div class="item-list__name">
                                 <h4 class="item-list__name--inline item-list__relative">
-                                    <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]} (HQ⇒NQ)</a>
+                                    <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name} (HQ⇒NQ)</a>
                                 </h4>
                             </div>
                             <ul class="item-list__name item-list__rmn-stackable-retainers">` +
@@ -504,18 +515,18 @@ chrome.runtime.sendMessage({"call": "get_data"}, response => {
             }
         });
 
-        Object.keys(report.duplicates).forEach(lodestone_id => {
+        Object.keys(report.duplicates).forEach(lodestone_name => {
             duplicates_list.insertAdjacentHTML(
                 "beforeend",
                 Sanitizer.escapeHTML`
                     <li class="item-list__list">
                         <div class="item-list__name">
                             <h4 class="item-list__name--inline item-list__relative">
-                                <a href="/lodestone/playguide/db/item/${lodestone_id}/">${item_names[lodestone_id]}</a>
+                                <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}</a>
                             </h4>
                         </div>
                         <ul class="item-list__name item-list__rmn-duplicate-retainers">` +
-                            Object.keys(report.duplicates[lodestone_id]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_id][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                            Object.keys(report.duplicates[lodestone_name]).map(retainer => `<li>${retainer} (${report.duplicates[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
