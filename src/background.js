@@ -3,7 +3,8 @@ var ns = typeof browser == "undefined" ? chrome : browser;var ns = (typeof brows
 var xivapi = {
         "key"         : '0e1339f00eb14023a206afef',
         "max_requests": 5,
-        "delay"       : 500
+        "delay"       : 500,
+        "max_results" : 3000
     },
     salvageable_items_urls = [
         'https://de.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/',
@@ -20,25 +21,28 @@ var xivapi = {
     storable_names       = [],
     salvageable_names    = [],
     seasonal_names       = [],
+    purchasable_names    = [],
     stackables_max_size  = {},
     exclude_custom_equip = false;
     lower_items_quality  = true;
 
 // remove old data (<1.3.0)
 ns.storage.local.remove(["storable_ids", "salvageable_ids", "seasonal_ids", "stackable_items"]);
-ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_names": [], "stackables_max_size": {}, "exclude_custom_equip": false, "lower_items_quality": true}, data => {
+ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_names": [], "purchasable_names": [], "stackables_max_size": {}, "exclude_custom_equip": false, "lower_items_quality": true}, data => {
     storable_names       = data.storable_names;
     salvageable_names    = data.salvageable_names;
     seasonal_names       = data.seasonal_names;
+    purchasable_names    = data.purchasable_names;
     stackables_max_size  = data.stackables_max_size;
     exclude_custom_equip = data.exclude_custom_equip;
     lower_items_quality  = data.lower_items_quality;
 
-    var page = 1;
+    var stackablesPage   = 1,
+        purchasablesPage = 1;
 
-    var scan = () => {
-        $.get("https://xivapi.com/search?indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=100&page=" + page + "&key=" + xivapi.key , data => {
-            page = data.Pagination.PageNext;
+    var scanStackables = () => {
+        $.get("https://xivapi.com/search?indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=" + xivapi.max_results + "&page=" + stackablesPage + "&key=" + xivapi.key , data => {
+            stackablesPage = data.Pagination.PageNext;
 
             Object.keys(data.Results).forEach(index => {
                 stackables_max_size[data.Results[index].Name_de] = data.Results[index].StackSize;
@@ -47,15 +51,35 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
                 stackables_max_size[data.Results[index].Name_ja] = data.Results[index].StackSize;
             });
         }).done(() => {
-            if (page != null) {
-                setTimeout(scan, (page - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
+            if (stackablesPage != null) {
+                setTimeout(scanStackables, (stackablesPage - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
             } else {
                 ns.storage.local.set({"stackables_max_size": stackables_max_size});
+                scanPurchasables();
+            }
+        })
+    };
+
+    var scanPurchasables = () => {
+        $.get("https://xivapi.com/search?indexes=Item&columns=Name_*,GameContentLinks.GilShopItem.Item&filters=GameContentLinks.GilShopItem.Item%3E0&limit=" +  xivapi.max_results + "&page=" + purchasablesPage + "&key=" + xivapi.key , data => {
+            purchasablesPage = data.Pagination.PageNext;
+
+            Object.keys(data.Results).forEach(index => {
+                purchasable_names.push(data.Results[index].Name_de);
+                purchasable_names.push(data.Results[index].Name_en);
+                purchasable_names.push(data.Results[index].Name_fr);
+                purchasable_names.push(data.Results[index].Name_ja);
+            });
+        }).done(() => {
+            if (purchasablesPage != null) {
+                setTimeout(scanPurchasables, (purchasablesPage - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
+            } else {
+                ns.storage.local.set({"purchasable_names": purchasable_names});console.log(purchasable_names);
             }
         });
     };
 
-    scan();
+    scanStackables();
 
     $.get("https://xivapi.com/Cabinet?columns=Item.Name_*&limit=3000&key=" + xivapi.key , data => {
         Object.keys(data.Results).forEach(index => {
@@ -100,6 +124,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
                         "storable_names"      : storable_names,
                         "salvageable_names"   : salvageable_names,
                         "seasonal_names"      : seasonal_names,
+                        "purchasable_names"   : purchasable_names,
                         "stackables_max_size" : stackables_max_size,
                         "exclude_custom_equip": exclude_custom_equip,
                         "lower_items_quality" : lower_items_quality
