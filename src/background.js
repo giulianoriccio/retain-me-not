@@ -37,7 +37,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
     var page = 1;
 
     var scan = () => {
-        $.get("https://xivapi.com/search?c=10&indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=100&page=" + page + "&key=" + xivapi.key , data => {
+        $.get("https://xivapi.com/search?indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=100&page=" + page + "&key=" + xivapi.key , data => {
             page = data.Pagination.PageNext;
 
             Object.keys(data.Results).forEach(index => {
