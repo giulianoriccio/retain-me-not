@@ -20,5 +20,5 @@ The data is provided by [XIVDB API](/xivdb/api) and lodestone.
 - [x] Add an option to exclude customized armor from the search
 - [ ] Add MS Edge compatibility
 - [x] Consider the option of lowering the quality of HQ items to stack them together with NQ items
-- [ ] Search for items that can be purchased from NPCs
+- [x] Search for items that can be purchased from NPCs
 - [ ] Add an export function for the report
