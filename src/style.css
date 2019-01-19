@@ -1,19 +1,21 @@
 @charset "utf-8";
 
 .rmn_loaded .item-list__header__retainer--name {
-    width: 264px !important;
+    width: 180px !important;
 }
 
 .rmn_loaded .item-list__header__retainer--storable,
 .rmn_loaded .item-list__header__retainer--salvageable,
 .rmn_loaded .item-list__header__retainer--seasonal,
+.rmn_loaded .item-list__header__retainer--purchasable,
 .rmn_loaded .item-list__header__retainer--stackable {
     width: 80px;
 }
 
 .rmn_loaded .item-list__storable,
 .rmn_loaded .item-list__salvageable,
-.rmn_loaded .item-list__seasonal {
+.rmn_loaded .item-list__seasonal,
+.rmn_loaded .item-list__purchasable {
     text-align: center;
     display: table-cell;
     line-height: 0;
@@ -27,13 +29,15 @@
 }
 
 .rmn_loaded .item-list__storable,
-.rmn_loaded .item-list__seasonal {
+.rmn_loaded .item-list__seasonal,
+.rmn_loaded .item-list__purchasable {
     width: 80px;
 }
 
 .rmn_loaded .item-list__storable::after,
 .rmn_loaded .item-list__salvageable::after,
-.rmn_loaded .item-list__seasonal::after {
+.rmn_loaded .item-list__seasonal::after,
+.rmn_loaded .item-list__purchasable::after {
     display: inline-block;
     height: 16px;
     width: 16px;
@@ -45,14 +49,16 @@
 
 .rmn_loaded .item-list__storable.storable_sign--0::after,
 .rmn_loaded .item-list__salvageable.salvageable_sign--0::after,
-.rmn_loaded .item-list__seasonal.seasonal_sign--0::after {
+.rmn_loaded .item-list__seasonal.seasonal_sign--0::after,
+.rmn_loaded .item-list__purchasable.purchasable_sign--0::after {
     content: "✘";
     background: #993d3d;
 }
 
 .rmn_loaded .item-list__storable.storable_sign--1::after,
 .rmn_loaded .item-list__salvageable.salvageable_sign--1::after,
-.rmn_loaded .item-list__seasonal.seasonal_sign--1::after {
+.rmn_loaded .item-list__seasonal.seasonal_sign--1::after,
+.rmn_loaded .item-list__purchasable.purchasable_sign--1::after {
     content: "✔";
     background: #6a993d;
 }
@@ -73,6 +79,7 @@
 .rmn_loaded .item-list__header__rmn-storable--name,
 .rmn_loaded .item-list__header__rmn-salvageable--name,
 .rmn_loaded .item-list__header__rmn-seasonal--name,
+.rmn_loaded .item-list__header__rmn-purchasable--name,
 .rmn_loaded .item-list__header__rmn-duplicate--name {
     width: 298px;
 }
@@ -80,6 +87,7 @@
 .rmn_loaded .item-list__header__rmn-storable--retainers,
 .rmn_loaded .item-list__header__rmn-salvageable--retainers,
 .rmn_loaded .item-list__header__rmn-seasonal--retainers,
+.rmn_loaded .item-list__header__rmn-purchasable--retainers,
 .rmn_loaded .item-list__header__rmn-duplicate--retainers {
     width: 298px;
 }
@@ -87,6 +95,7 @@
 .rmn_loaded .item-list__rmn-storable-retainers,
 .rmn_loaded .item-list__rmn-salvageable-retainers,
 .rmn_loaded .item-list__rmn-seasonal-retainers,
+.rmn_loaded .item-list__rmn-purchasable-retainers,
 .rmn_loaded .item-list__rmn-duplicate-retainers {
     width: 290px;
 }

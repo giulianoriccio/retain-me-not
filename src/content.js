@@ -12,6 +12,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
     var storable_names       = response.storable_names,
         salvageable_names    = response.salvageable_names,
         seasonal_names       = response.seasonal_names,
+        purchasable_names    = response.purchasable_names,
         stackables_max_size  = response.stackables_max_size;
         exclude_custom_equip = response.exclude_custom_equip,
         lower_items_quality  = response.lower_items_quality,
@@ -21,90 +22,106 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
             "storables"   : {},
             "salvageables": {},
             "seasonals"   : {},
+            "purchasables": {},
             "duplicates"  : {},
             "stackables"  : {}
         },
         i18n = {
             "en-gb": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)",
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)",
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)",
-                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required",
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)",
-                "Duplicates"                                                            : "Duplicates",
-                "Storable"                                                              : "Storable",
-                "Salvageable"                                                           : "Salvageable",
-                "Seasonal"                                                              : "Seasonal",
-                "Stackable"                                                             : "Stackable",
-                "Retainers"                                                             : "Retainers",
-                "Items"                                                                 : "Items",
-                "Stacks (before)"                                                       : "Stacks (before)",
-                "Stacks (after)"                                                        : "Stacks (after)"
+                "Storables (items you can store in your Armoire)"                                    : "Storables (items you can store in your Armoire)",
+                "Salvageables (items you can repurchase from the Calamity Salvager)"                 : "Salvageables (items you can repurchase from the Calamity Salvager)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"                 : "Seasonals (items you can repurchase from the Recompense Officer *)",
+                "* seasonal quest achievement required"                                              : "* seasonal quest achievement required",
+                "Purchasables (items you can repurchase from sellers with gil *)"                    : "Purchasables (items you can repurchase from sellers with gil *)",
+                "* some sellers may be available only on specific events or not be available anymore": "* some sellers may be available only on specific events or not be available anymore",
+                "Stackables (items you can stack together to reduce the occupied slots)"             : "Stackables (items you can stack together to reduce the occupied slots)",
+                "Duplicates"                                                                         : "Duplicates",
+                "Storable"                                                                           : "Storable",
+                "Salvageable"                                                                        : "Salvageable",
+                "Seasonal"                                                                           : "Seasonal",
+                "Purchasable"                                                                        : "Purchasable",
+                "Stackable"                                                                          : "Stackable",
+                "Retainers"                                                                          : "Retainers",
+                "Items"                                                                              : "Items",
+                "Stacks (before)"                                                                    : "Stacks (before)",
+                "Stacks (after)"                                                                     : "Stacks (after)"
             },
             "en-us": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)",
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)",
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)",
-                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required",
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)",
-                "Duplicates"                                                            : "Duplicates",
-                "Storable"                                                              : "Storable",
-                "Salvageable"                                                           : "Salvageable",
-                "Seasonal"                                                              : "Seasonal",
-                "Stackable"                                                             : "Stackable",
-                "Retainers"                                                             : "Retainers",
-                "Items"                                                                 : "Items",
-                "Stacks (before)"                                                       : "Stacks (before)",
-                "Stacks (after)"                                                        : "Stacks (after)"
+                "Storables (items you can store in your Armoire)"                                    : "Storables (items you can store in your Armoire)",
+                "Salvageables (items you can repurchase from the Calamity Salvager)"                 : "Salvageables (items you can repurchase from the Calamity Salvager)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"                 : "Seasonals (items you can repurchase from the Recompense Officer *)",
+                "* seasonal quest achievement required"                                              : "* seasonal quest achievement required",
+                "Purchasables (items you can repurchase from sellers with gil *)"                    : "Purchasables (items you can repurchase from sellers with gil *)",
+                "* some sellers may be available only on specific events or not be available anymore": "* some sellers may be available only on specific events or not be available anymore",
+                "Stackables (items you can stack together to reduce the occupied slots)"             : "Stackables (items you can stack together to reduce the occupied slots)",
+                "Duplicates"                                                                         : "Duplicates",
+                "Storable"                                                                           : "Storable",
+                "Salvageable"                                                                        : "Salvageable",
+                "Seasonal"                                                                           : "Seasonal",
+                "Purchasable"                                                                        : "Purchasable",
+                "Stackable"                                                                          : "Stackable",
+                "Retainers"                                                                          : "Retainers",
+                "Items"                                                                              : "Items",
+                "Stacks (before)"                                                                    : "Stacks (before)",
+                "Stacks (after)"                                                                     : "Stacks (after)"
             },
             "de": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO: translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
-                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO: translate
-                "Storable"                                                              : "Lagerfähigen",
-                "Salvageable"                                                           : "Salvageable", // TO-DO: translate
-                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
-                "Stackable"                                                             : "Stackable", // TO-DO: translate
-                "Retainers"                                                             : "Gehilfen",
-                "Items"                                                                 : "Gegenstände",
-                "Stacks (before)"                                                       : "Stapelzahl (vorher)",
-                "Stacks (after)"                                                        : "Stapelzahl (danach)"
+                "Storables (items you can store in your Armoire)"                                    : "Storables (items you can store in your Armoire)", // TO-DO: translate
+                "Salvageables (items you can repurchase from the Calamity Salvager)"                 : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
+                "Seasonals (items you can repurchase from the Recompense Officer *)"                 : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
+                "* seasonal quest achievement required"                                              : "* seasonal quest achievement required", // TO-DO: translate
+                "Purchasables (items you can repurchase from sellers with gil *)"                    : "Purchasables (items you can repurchase from sellers with gil *)", // TO-DO: translate
+                "* some sellers may be available only on specific events or not be available anymore": "* some sellers may be available only on specific events or not be available anymore", // TO-DO: translate
+                "Stackables (items you can stack together to reduce the occupied slots)"             : "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
+                "Duplicates"                                                                         : "Duplicates", // TO-DO: translate
+                "Storable"                                                                           : "Lagerfähigen",
+                "Salvageable"                                                                        : "Salvageable", // TO-DO: translate
+                "Seasonal"                                                                           : "Seasonal", // TO-DO: translate
+                "Purchasable"                                                                        : "Purchasable", // TO-DO: translate
+                "Stackable"                                                                          : "Stackable", // TO-DO: translate
+                "Retainers"                                                                          : "Gehilfen",
+                "Items"                                                                              : "Gegenstände",
+                "Stacks (before)"                                                                    : "Stapelzahl (vorher)",
+                "Stacks (after)"                                                                     : "Stapelzahl (danach)"
             },
             "fr": {
-                "Storables (items you can store in your Armoire)"                       : "Stockable (objets que vous pouvez ranger dans votre Bahut)",
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Consignable (objets que vous pouvez racheter au Consigneur)",
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Saisonnier (objets que vous pouvez racheter au Responsable Des Récompenses *)",
-                "* seasonal quest achievement required"                                 : "* haut-fait de l'événement saisonnier requis",
-                "Stackables (items you can stack together to reduce the occupied slots)": "Empilable (objets que vous pouvez empiler ensemble pour réduire leur place)",
-                "Duplicates"                                                            : "Doublons",
-                "Storable"                                                              : "Stockable",
-                "Salvageable"                                                           : "Consignable",
-                "Seasonal"                                                              : "Saisonnier",
-                "Stackable"                                                             : "Empilable",
-                "Retainers"                                                             : "Servants",
-                "Items"                                                                 : "Objets",
-                "Stacks (before)"                                                       : "Piles (avant)",
-                "Stacks (after)"                                                        : "Piles (après)"
+                "Storables (items you can store in your Armoire)"                                    : "Stockable (objets que vous pouvez ranger dans votre Bahut)",
+                "Salvageables (items you can repurchase from the Calamity Salvager)"                 : "Consignable (objets que vous pouvez racheter au Consigneur)",
+                "Seasonals (items you can repurchase from the Recompense Officer *)"                 : "Saisonnier (objets que vous pouvez racheter au Responsable Des Récompenses *)",
+                "* seasonal quest achievement required"                                              : "* haut-fait de l'événement saisonnier requis",
+                "Purchasables (items you can repurchase from sellers with gil *)"                    : "Purchasables (items you can repurchase from sellers with gil *)", // TO-DO: translate
+                "* some sellers may be available only on specific events or not be available anymore": "* some sellers may be available only on specific events or not be available anymore", // TO-DO: translate
+                "Stackables (items you can stack together to reduce the occupied slots)"             : "Empilable (objets que vous pouvez empiler ensemble pour réduire leur place)",
+                "Duplicates"                                                                         : "Doublons",
+                "Storable"                                                                           : "Stockable",
+                "Salvageable"                                                                        : "Consignable",
+                "Seasonal"                                                                           : "Saisonnier",
+                "Purchasable"                                                                        : "Purchasable", // TO-DO: translate
+                "Stackable"                                                                          : "Empilable",
+                "Retainers"                                                                          : "Servants",
+                "Items"                                                                              : "Objets",
+                "Stacks (before)"                                                                    : "Piles (avant)",
+                "Stacks (after)"                                                                     : "Piles (après)"
             },
             "ja": {
-                "Storables (items you can store in your Armoire)"                       : "Storables (items you can store in your Armoire)", // TO-DO: translate
-                "Salvageables (items you can repurchase from the Calamity Salvager)"    : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
-                "Seasonals (items you can repurchase from the Recompense Officer *)"    : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
-                "* seasonal quest achievement required"                                 : "* seasonal quest achievement required", // TO-DO: translate
-                "Stackables (items you can stack together to reduce the occupied slots)": "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
-                "Duplicates"                                                            : "Duplicates", // TO-DO: translate
-                "Storable"                                                              : "Storable", // TO-DO: translate
-                "Salvageable"                                                           : "Salvageable", // TO-DO: translate
-                "Seasonal"                                                              : "Seasonal", // TO-DO: translate
-                "Stackable"                                                             : "Stackable", // TO-DO: translate
-                "Retainers"                                                             : "リテイナー",
-                "Items"                                                                 : "アイテム",
-                "Stacks"                                                                : "スタック",
-                "Stacks (before)"                                                       : "スタック (前)",
-                "Stacks (after)"                                                        : "スタック (上)"
+                "Storables (items you can store in your Armoire)"                                    : "Storables (items you can store in your Armoire)", // TO-DO: translate
+                "Salvageables (items you can repurchase from the Calamity Salvager)"                 : "Salvageables (items you can repurchase from the Calamity Salvager)", // TO-DO: translate
+                "Seasonals (items you can repurchase from the Recompense Officer *)"                 : "Seasonals (items you can repurchase from the Recompense Officer *)", // TO-DO: translate
+                "* seasonal quest achievement required"                                              : "* seasonal quest achievement required", // TO-DO: translate
+                "Purchasables (items you can repurchase from sellers with gil *)"                    : "Purchasables (items you can repurchase from sellers with gil *)", // TO-DO: translate
+                "* some sellers may be available only on specific events or not be available anymore": "* some sellers may be available only on specific events or not be available anymore", // TO-DO: translate
+                "Stackables (items you can stack together to reduce the occupied slots)"             : "Stackables (items you can stack together to reduce the occupied slots)", // TO-DO: translate
+                "Duplicates"                                                                         : "Duplicates", // TO-DO: translate
+                "Storable"                                                                           : "Storable", // TO-DO: translate
+                "Salvageable"                                                                        : "Salvageable", // TO-DO: translate
+                "Seasonal"                                                                           : "Seasonal", // TO-DO: translate
+                "Purchasable"                                                                        : "Purchasable", // TO-DO: translate
+                "Stackable"                                                                          : "Stackable", // TO-DO: translate
+                "Retainers"                                                                          : "リテイナー",
+                "Items"                                                                              : "アイテム",
+                "Stacks"                                                                             : "スタック",
+                "Stacks (before)"                                                                    : "スタック (前)",
+                "Stacks (after)"                                                                     : "スタック (上)"
             },
         },
         _ = i18n[document.documentElement.lang || "en-us"];
@@ -145,6 +162,14 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                 </ul>
                 <ul class="item-list--seasonal">
                 </ul>
+                <h3 class="heading--md">${_["Purchasables (items you can repurchase from sellers with gil *)"]}<div class="heading--sm" style="padding: 0">${_["* some sellers may be available only on specific events or not be available anymore"]}</div></h3>
+                <ul class="item-list__header">
+                    <li class="item-list__header__cell item-list__header__rmn-purchasable--name">${_["Items"]}</li>
+                    <li class="item-list__header__cell__spacer"></li>
+                    <li class="item-list__header__cell item-list__header__rmn-purchasable--retainers">${_["Retainers"]}</li>
+                </ul>
+                <ul class="item-list--purchasable">
+                </ul>
                 <h3 class="heading--md">${_["Stackables (items you can stack together to reduce the occupied slots)"]}</h3>
                 <ul class="item-list__header">
                     <li class="item-list__header__cell item-list__header__rmn-stackable--name">${_["Items"]}</li>
@@ -171,6 +196,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
     var storables_list    = document.querySelector(".item-list--storable"),
         salvageables_list = document.querySelector(".item-list--salvageable"),
         seasonals_list    = document.querySelector(".item-list--seasonal"),
+        purchasables_list = document.querySelector(".item-list--purchasable"),
         stackables_list   = document.querySelector(".item-list--stackable"),
         duplicates_list   = document.querySelector(".item-list--duplicate");
 
@@ -188,6 +214,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
             <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--storable">${_["Storable"]}</li>
             <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--salvageable">${_["Salvageable"]}</li>
             <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--seasonal">${_["Seasonal"]}</li>
+            <li class="item-list__header__cell__spacer"></li><li class="item-list__header__cell item-list__header__retainer--purchasable">${_["Purchasable"]}</li>
         `
     );
 
@@ -209,6 +236,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                 <div class="item-list__storable">---</div>
                 <div class="item-list__salvageable">---</div>
                 <div class="item-list__seasonal">---</div>
+                <div class="item-list__purchasable">---</div>
             `);
         } else {
             if (storable_names.indexOf(lodestone_name) !== -1) {
@@ -227,6 +255,15 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--1"></div>`);
             } else {
                 item.insertAdjacentHTML("beforeend", `<div class="item-list__seasonal seasonal_sign--0"></div>`);
+            }
+
+            if (purchasable_names.indexOf(lodestone_name) !== -1
+                && salvageable_names.indexOf(lodestone_name) === -1
+                && seasonal_names.indexOf(lodestone_name) === -1
+            ) {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__purchasable purchasable_sign--1"></div>`);
+            } else {
+                item.insertAdjacentHTML("beforeend", `<div class="item-list__purchasable purchasable_sign--0"></div>`);
             }
         }
     });
@@ -293,6 +330,21 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                     }
 
                     ++ report.seasonals[lodestone_name][retainer_name];
+                }
+
+                if (purchasable_names.indexOf(lodestone_name) !== -1
+                    && salvageable_names.indexOf(lodestone_name) === -1
+                    && seasonal_names.indexOf(lodestone_name) === -1
+                ) {
+                    if (!(lodestone_name in report.purchasables)) {
+                        report.purchasables[lodestone_name] = {};
+                    }
+
+                    if (!(retainer_name in report.purchasables[lodestone_name])) {
+                        report.purchasables[lodestone_name][retainer_name] = 0;
+                    }
+
+                    ++ report.purchasables[lodestone_name][retainer_name];
                 }
 
                 if (!(lodestone_name in retainers_items[retainer_name])) {
@@ -409,6 +461,24 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
                         </div>
                         <ul class="item-list__name item-list__rmn-seasonal-retainers">` +
                             Object.keys(report.seasonals[lodestone_name]).map(retainer => `<li>${retainer} (${report.seasonals[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
+                        </ul>
+                    </li>
+                `
+            );
+        });
+
+        Object.keys(report.purchasables).forEach(lodestone_name => {
+            purchasables_list.insertAdjacentHTML(
+                "beforeend",
+                Sanitizer.escapeHTML`
+                    <li class="item-list__list">
+                        <div class="item-list__name">
+                            <h4 class="item-list__name--inline item-list__relative">
+                                <a class="eorzeadb_link" href="${document.location.origin}/lodestone/playguide/db/item/${lodestone_ids[lodestone_name]}/">${lodestone_name}</a>
+                            </h4>
+                        </div>
+                        <ul class="item-list__name item-list__rmn-purchasable-retainers">` +
+                            Object.keys(report.purchasables[lodestone_name]).map(retainer => `<li>${retainer} (${report.purchasables[lodestone_name][retainer]})</li>`).join("") + Sanitizer.escapeHTML`
                         </ul>
                     </li>
                 `
@@ -533,7 +603,7 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
             );
         });
 
-        [storables_list, salvageables_list, seasonals_list, stackables_list, duplicates_list].forEach(list => {
+        [storables_list, salvageables_list, seasonals_list, purchasables_list, stackables_list, duplicates_list].forEach(list => {
             if (!list.querySelector(".item-list__list")) {
                 list.insertAdjacentHTML(
                     "beforeend",
