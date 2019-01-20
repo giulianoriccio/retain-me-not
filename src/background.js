@@ -3,7 +3,7 @@ var ns = typeof browser == "undefined" ? chrome : browser;var ns = (typeof brows
 var xivapi = {
         "key"         : '0e1339f00eb14023a206afef',
         "max_requests": 5,
-        "delay"       : 500,
+        "delay"       : 600,
         "max_results" : 3000
     },
     salvageable_items_urls = [
@@ -55,7 +55,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
                 setTimeout(scanStackables, (stackablesPage - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
             } else {
                 ns.storage.local.set({"stackables_max_size": stackables_max_size});
-                scanPurchasables();
+                setTimeout(scanPurchasables, xivapi.delay);
             }
         })
     };
@@ -74,7 +74,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
             if (purchasablesPage != null) {
                 setTimeout(scanPurchasables, (purchasablesPage - 1) % xivapi.max_requests == 0 ? xivapi.delay : 0);
             } else {
-                ns.storage.local.set({"purchasable_names": purchasable_names});console.log(purchasable_names);
+                ns.storage.local.set({"purchasable_names": purchasable_names});
             }
         });
     };
