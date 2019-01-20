@@ -3,8 +3,9 @@ var ns = typeof browser == "undefined" ? chrome : browser;var ns = (typeof brows
 var xivapi = {
         "key"         : '0e1339f00eb14023a206afef',
         "max_requests": 5,
-        "delay"       : 600,
-        "max_results" : 3000
+        "delay"       : 500,
+        "max_results" : 3000,
+        "cooldown"    : 5100
     },
     salvageable_items_urls = [
         'https://de.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/',
@@ -57,7 +58,9 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
                 ns.storage.local.set({"stackables_max_size": stackables_max_size});
                 setTimeout(scanPurchasables, xivapi.delay);
             }
-        })
+        }).fail(() => {
+            setTimeout(scanStackables, xivapi.cooldown);
+        });
     };
 
     var scanPurchasables = () => {
@@ -76,6 +79,8 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
             } else {
                 ns.storage.local.set({"purchasable_names": purchasable_names});
             }
+        }).fail(() => {
+            setTimeout(scanPurchasables, xivapi.cooldown);
         });
     };
 
