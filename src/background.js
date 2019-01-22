@@ -41,7 +41,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
     var stackablesPage   = 1,
         purchasablesPage = 1;
 
-    var scanStackables = () => {
+    /*var scanStackables = () => {
         $.get("https://xivapi.com/search?indexes=Item&columns=Name_*,StackSize&filters=StackSize%3E1,StackSize%3C1000&limit=" + xivapi.max_results + "&page=" + stackablesPage + "&key=" + xivapi.key , data => {
             stackablesPage = data.Pagination.PageNext;
 
@@ -95,7 +95,7 @@ ns.storage.local.get({"storable_names": [], "salvageable_names": [], "seasonal_n
         });
 
         ns.storage.local.set({"storable_names": storable_names});
-    });
+    });*/
 
     var salvageable_promises = [];
 
