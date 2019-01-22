@@ -3,7 +3,7 @@
 
     "name": "Retain me not",
     "description": "Free your FFXIV inventory up",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "icons": {"128": "icon.png"},
 
     "author": "Giuliano Riccio",
