@@ -37,8 +37,6 @@
     "permissions": [
         "storage",
         "unlimitedStorage",
-        "https://xivapi.com/*",
-        "https://*.finalfantasyxiv.com/lodestone/playguide/db/shop/9d03aec955c/",
-        "https://*.finalfantasyxiv.com/lodestone/playguide/db/shop/0ba5004ab8e/"
+        "https://retainmenot.ffxivaddons.com/*"
     ]
   }
