@@ -5,9 +5,9 @@ ns.runtime.sendMessage({"call": "get_data"}, response => {
         return;
     }
 
-    var s = document.createElement('script');
+    /*var s = document.createElement('script');
     s.src = "https://img.finalfantasyxiv.com/lds/pc/global/js/eorzeadb/loader.js?v2";
-    document.head.appendChild(s);
+    document.head.appendChild(s);*/
 
     var storable_names       = response.storable_names,
         salvageable_names    = response.salvageable_names,
