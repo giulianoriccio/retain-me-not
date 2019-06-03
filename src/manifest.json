@@ -32,8 +32,6 @@
         "js": ["jquery.js", "sanitizer.js", "content.js"]
     }],
 
-    "content_security_policy": "script-src 'self' https://img.finalfantasyxiv.com; object-src 'self'",
-
     "permissions": [
         "storage",
         "unlimitedStorage",
