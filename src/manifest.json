@@ -3,7 +3,7 @@
 
     "name": "Retain me not",
     "description": "Free your FFXIV inventory up",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "icons": {"128": "icon.png"},
 
     "author": "Giuliano Riccio",
@@ -31,8 +31,6 @@
         "css": ["style.css"],
         "js": ["jquery.js", "sanitizer.js", "content.js"]
     }],
-
-    "content_security_policy": "script-src 'self' https://img.finalfantasyxiv.com; object-src 'self'",
 
     "permissions": [
         "storage",
